@@ -17,6 +17,10 @@
 #include <vector>
 #include <ctime>
 
+#ifdef __EMSCRIPTEN__
+  #include <emscripten.h>
+#endif
+
 #include "femath.h"
 #include "festring.h"
 #include "ivandef.h"

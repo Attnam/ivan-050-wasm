@@ -12,6 +12,10 @@
 
 #include <cctype>
 
+#ifdef __EMSCRIPTEN__
+  #include <emscripten.h>
+#endif
+
 #include "save.h"
 #include "femath.h"
 
@@ -25,7 +29,17 @@ outputfile::outputfile(const festring& FileName, truth AbortOnErr)
 outputfile::~outputfile()
 {
   if(Buffer)
+  {
     fclose(Buffer);
+    
+#ifdef __EMSCRIPTEN__
+    EM_ASM(
+      FS.syncfs(function (err) {
+        assert(!err);
+      });
+    );
+#endif
+  }
 }
 
 void outputfile::ReOpen()

@@ -101,7 +101,7 @@ void globalerrorhandler::Abort(const char* Format, ...)
   MessageBox(NULL, Buffer, "Program aborted!",
 	     MB_OK|MB_ICONEXCLAMATION|MB_TASKMODAL);
 #endif
-#ifdef LINUX
+#ifdef UNIX
   std::cout << Buffer << std::endl;
 #endif
 #ifdef __DJGPP__
@@ -124,7 +124,7 @@ int globalerrorhandler::NewHandler(size_t)
   ShowWindow(GetActiveWindow(), SW_HIDE);
   MessageBox(NULL, Msg, "Program aborted!", MB_OK|MB_ICONEXCLAMATION);
 #endif
-#ifdef LINUX
+#ifdef UNIX
   std::cout << Msg << std::endl;
 #endif
 #ifdef __DJGPP__

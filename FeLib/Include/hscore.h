@@ -18,8 +18,13 @@
 
 #include "festring.h"
 
-#ifdef LINUX
-#define HIGH_SCORE_FILENAME LOCAL_STATE_DIR "/ivan-highscore.scores"
+
+#ifdef UNIX
+  #ifdef __EMSCRIPTEN__
+    #define HIGH_SCORE_FILENAME CONST_S("/local/HScore.dat")
+  #else
+    #define HIGH_SCORE_FILENAME LOCAL_STATE_DIR "/ivan-highscore.scores"
+  #endif
 #endif
 
 #if defined(WIN32) || defined(__DJGPP__)

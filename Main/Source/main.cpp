@@ -12,6 +12,10 @@
 
 #include <iostream>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #ifdef __DJGPP__
 #include <go32.h>
 #include <sys/farptr.h>
@@ -58,6 +62,17 @@ int main(int argc, char** argv)
   msgsystem::Init();
   protosystem::Initialize();
   igraph::LoadMenu();
+
+#ifdef __EMSCRIPTEN__
+  EM_ASM(
+    FS.mkdir('/local');
+    FS.mount(IDBFS, {}, '/local');
+
+    FS.syncfs(true, function (err) {
+      assert(!err);
+    });
+  );
+#endif
 
   for(;;)
   {

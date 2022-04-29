@@ -67,8 +67,6 @@ elseif(WIN32)
   add_definitions(-D_USE_32BIT_TIME_T)
 endif(UNIX)
 
-#add_definitions(-D_USE_32BIT_TIME_T)
-
 # In visual studio, add an option to hide the console window (useful where debugging is not intended - i.e. releases)
 if(MSVC AND MSVC_HIDE_CONSOLE_WINDOW)
   # Hide the console window in visual studio projects

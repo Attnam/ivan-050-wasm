@@ -10,6 +10,10 @@
  *
  */
 
+#ifdef __EMSCRIPTEN__
+  #include <emscripten.h>
+#endif
+
 #include "config.h"
 #include "save.h"
 #include "felist.h"
@@ -86,6 +90,14 @@ truth configsystem::Save()
     Option[c]->SaveValue(SaveFile);
     SaveFile << ";\n";
   }
+
+#ifdef __EMSCRIPTEN__
+  EM_ASM(
+    FS.syncfs(function (err) {
+      assert(!err);
+    });
+  );
+#endif
 
   return true;
 }

@@ -16,6 +16,10 @@
 #include "bitmap.h"
 #include "festring.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #if SDL_MAJOR_VERSION == 1
 /* redefine SDL2 to SDL1 */
 #define SDL_WINDOWEVENT SDL_VIDEOEXPOSE
@@ -186,13 +190,17 @@ int globalwindowhandler::GetKey(truth EmptyBuffer)
               graphics::BlitDBToScreen();
           }
 
-	  SDL_Delay(10);
-	}
-	else
-	{
-	  SDL_WaitEvent(&Event);
-	  ProcessMessage(&Event);
-	}
+          #ifdef __EMSCRIPTEN__
+            emscripten_sleep(10);
+          #else
+            SDL_Delay(10);
+          #endif
+        }
+        else
+        {
+          SDL_WaitEvent(&Event);
+          ProcessMessage(&Event);
+        }
       }
     }
 }

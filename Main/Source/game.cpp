@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cstdarg>
 
-#if defined(LINUX) || defined(__DJGPP__)
+#if defined(UNIX) || defined(__DJGPP__)
 #include <sys/stat.h>
 #endif
 
@@ -243,8 +243,28 @@ truth game::Init(const festring& Name)
   mkdir("Save", S_IWUSR);
 #endif
 
-#ifdef LINUX
+#ifdef UNIX
+  #ifdef __EMSCRIPTEN__
+  // Need to check for folder existence first
+  EM_ASM(
+    if(!FS.analyzePath('/local/Save').exists)
+    {
+      FS.mkdir('/local/Save');
+    }
+    
+    if(!FS.analyzePath('/local/Bones').exists)
+    {
+      FS.mkdir('/local/Bones');
+    }
+    
+    FS.syncfs(function (err) {
+      assert(!err);
+    });
+  );
+
+  #else
   mkdir(GetSaveDir().CStr(), S_IRWXU|S_IRWXG);
+  #endif
 #endif
 
 #ifdef WIN32
@@ -1041,6 +1061,14 @@ void game::RemoveSaves(truth RealSavesAlso)
 
       remove(File.CStr());
     }
+
+#ifdef __EMSCRIPTEN__
+    EM_ASM(
+        FS.syncfs(function (err) {
+            // Error
+        });
+    );
+#endif
 }
 
 void game::SetPlayer(character* NP)
@@ -2207,9 +2235,13 @@ inputfile& operator>>(inputfile& SaveFile, dangerid& Value)
 
 festring game::GetHomeDir()
 {
-#ifdef LINUX
+#ifdef UNIX
   festring Dir;
+  #ifdef __EMSCRIPTEN__
+    Dir << "";
+  #else
   Dir << getenv("HOME") << '/';
+  #endif
   return Dir;
 #endif
 
@@ -2220,9 +2252,13 @@ festring game::GetHomeDir()
 
 festring game::GetSaveDir()
 {
-#ifdef LINUX
+#ifdef UNIX
   festring Dir;
+  #ifdef __EMSCRIPTEN__
+  Dir << "/local/Save/";
+  #else
   Dir << getenv("HOME") << "/IvanSave/";
+  #endif
   return Dir;
 #endif
 
@@ -2233,8 +2269,14 @@ festring game::GetSaveDir()
 
 festring game::GetGameDir()
 {
-#ifdef LINUX
+#ifdef UNIX
+  #ifdef __EMSCRIPTEN__
+  festring Dir;
+  Dir << "";
+  return Dir;
+  #else
   return DATADIR "/ivan/";
+  #endif
 #endif
 
 #if defined(WIN32) || defined(__DJGPP__)
@@ -2244,8 +2286,14 @@ festring game::GetGameDir()
 
 festring game::GetBoneDir()
 {
-#ifdef LINUX
+#ifdef UNIX
+  #ifdef __EMSCRIPTEN__
+  festring Dir;
+  Dir << "/local/Bones/";
+  return Dir;
+  #else
   return LOCAL_STATE_DIR "/Bones/";
+  #endif
 #endif
 
 #if defined(WIN32) || defined(__DJGPP__)
@@ -2533,6 +2581,13 @@ truth game::PrepareRandomBone(int LevelIndex)
       {
 	BoneFile.Close();
 	remove(BoneName.CStr());
+#ifdef __EMSCRIPTEN__
+    EM_ASM(
+        FS.syncfs(function (err) {
+            // Error
+        });
+    );
+#endif
 	continue;
       }
 
@@ -2570,6 +2625,13 @@ truth game::PrepareRandomBone(int LevelIndex)
   if(BoneIndex != 1000)
   {
     remove(BoneName.CStr());
+#ifdef __EMSCRIPTEN__
+    EM_ASM(
+        FS.syncfs(function (err) {
+            // Error
+        });
+    );
+#endif
     return true;
   }
   else

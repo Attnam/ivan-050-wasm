@@ -1,17 +1,3 @@
-#include(FindPkgConfig)
-#if(PKG_CONFIG_FOUND)
-#  pkg_check_modules(PCRE libpcre)
-#  set(PCRE_LIBRARIES ${PCRE_LDFLAGS})
-#endif()
-#if(NOT PCRE_FOUND)
-#  if(MSVC)
-#    find_path(PCRE_INCLUDE_DIR NAMES pcre.h)
-#    find_library(PCRE_LIBRARY pcre)
-#  endif()
-#  find_package(PCRE REQUIRED)
-#  add_definitions(${PCRE_DEFINITIONS})
-#endif()
-
 file(GLOB FELIB_SOURCES Include/*.h Source/*.cpp)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -27,13 +13,6 @@ endif()
 add_library(FeLib ${FELIB_SOURCES})
 
 find_package(SDL2 REQUIRED)
-#find_package(SDL2)
-#find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
-#find_library(SDL2_LIBRARY NAME SDL2)
-
-# Try finding libpng using pkg-config first, because find_package(PNG) finds a
-# mismatching header + library combination for me.
-#include(FindPkgConfig)
 
 if(MINGW)
   # Not very pretty solution. This finds SDL.dll from SDL.lib path, so that it can be installed where ivan.exe will end up.
@@ -90,14 +69,6 @@ if(MINGW)
     ]])
   endif() # if STATIC
 endif() # if MINGW
-
-if(MSVC AND _VCPKG_INSTALLED_DIR)
-  # Gum solution for manually copying dynamic link libraries from the vcpkg bin directory
-#  install(FILES "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/libpng16.dll" DESTINATION "ivan")
-#  install(FILES "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/zlib1.dll" DESTINATION "ivan")
-#  install(FILES "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/SDL2.dll" DESTINATION "ivan")
-#  install(FILES "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/SDL2_mixer.dll" DESTINATION "ivan")
-endif()
 
 target_include_directories(FeLib PUBLIC Include)
 target_include_directories(FeLib SYSTEM PUBLIC ${SDL2_INCLUDE_DIR} PRIVATE ${PCRE_INCLUDE_DIRS})

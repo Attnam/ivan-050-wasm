@@ -1,21 +1,4 @@
-#include(FindPkgConfig)
-#if(PKG_CONFIG_FOUND)
-#  pkg_check_modules(PCRE libpcre)
-#  set(PCRE_LIBRARIES ${PCRE_LDFLAGS})
-#endif()
-#if(NOT PCRE_FOUND)
-#  if(MSVC)
-#    find_path(PCRE_INCLUDE_DIR NAMES pcre.h)
-#    find_library(PCRE_LIBRARY pcre)
-#  endif()
-#  find_package(PCRE REQUIRED)
-#  add_definitions(${PCRE_DEFINITIONS})
-#endif()
-
-#find_package(SDL2)
 find_package(SDL2 REQUIRED)
-#find_file(SDL2_INCLUDE_DIR NAME SDL.h HINTS SDL2)
-#find_library(SDL2_LIBRARY NAME SDL2)
 
 file(GLOB IVAN_SOURCES Include/*.h Source/*.cpp)
 # The following files are #included from other .cpp files and so shouldn't be
@@ -42,11 +25,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     file(COPY ${CMAKE_SOURCE_DIR}/Graphics DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     file(COPY ${CMAKE_SOURCE_DIR}/Script DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     set_target_properties(ivan PROPERTIES LINK_FLAGS "-o ivan.js -s DISABLE_EXCEPTION_CATCHING=0 -s DISABLE_EXCEPTION_THROWING=0 -s DEMANGLE_SUPPORT=1 -s SAFE_HEAP=0 --bind -s WASM=1 -s ASSERTIONS=1 --preload-file Graphics --preload-file Script --preload-file favicon.ico")
-endif()
-
-if(MSVC AND _VCPKG_INSTALLED_DIR)
-  # Gum solution. Manually copy pcre.dll to where ivan.exe will end up.
-  install(FILES "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/pcre.dll" DESTINATION "ivan")
 endif()
 
 if(UNIX)

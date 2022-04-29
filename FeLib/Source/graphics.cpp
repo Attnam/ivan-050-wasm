@@ -14,6 +14,10 @@
 #include "SDL.h"
 #endif
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #ifdef __DJGPP__
 #include <dpmi.h>
 #include <conio.h>
@@ -60,6 +64,10 @@ void graphics::Init()
   if(!AlreadyInstalled)
   {
     AlreadyInstalled = true;
+
+#ifdef __EMSCRIPTEN__
+  SDL_SetHint(SDL_HINT_EMSCRIPTEN_ASYNCIFY, "1");
+#endif
 
 #ifdef USE_SDL
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE))

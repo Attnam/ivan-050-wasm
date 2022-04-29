@@ -10,6 +10,10 @@
  *
  */
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #include "iconf.h"
 #include "game.h"
 #include "feio.h"
@@ -201,8 +205,13 @@ void ivanconfig::Initialize()
 #endif
 #if defined(WIN32) || defined(__DJGPP__)
   configsystem::SetConfigFileName("ivan.cfg");
-#else
-  configsystem::SetConfigFileName(festring(getenv("HOME")) + "/.ivan.conf");
+#endif
+#if defined(UNIX)
+  #if defined(__EMSCRIPTEN__)
+    configsystem::SetConfigFileName("/local/ivan.cfg");
+  #else
+    configsystem::SetConfigFileName(festring(getenv("HOME")) + "/.ivan.conf");
+  #endif
 #endif
   configsystem::Load();
   CalculateContrastLuminance();
