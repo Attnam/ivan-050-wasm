@@ -38,7 +38,10 @@ target_include_directories(ivan PUBLIC Include ../Felib/Include ${PCRE_INCLUDE_D
 target_link_libraries(ivan FeLib ${PCRE_LIBRARIES})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set_target_properties(ivan PROPERTIES LINK_FLAGS "-o ivan.js -s DISABLE_EXCEPTION_CATCHING=0 -s DISABLE_EXCEPTION_THROWING=0 -s DEMANGLE_SUPPORT=1 -s SAFE_HEAP=0 --bind -s WASM=1 -s ASSERTIONS=1 --preload-file Bones --preload-file Graphics --preload-file Save --preload-file Script --preload-file favicon.ico")
+    configure_file(${CMAKE_SOURCE_DIR}/Main/Resource/favicon.ico ${CMAKE_CURRENT_BINARY_DIR}/favicon.ico COPYONLY)
+    file(COPY ${CMAKE_SOURCE_DIR}/Graphics DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(COPY ${CMAKE_SOURCE_DIR}/Script DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    set_target_properties(ivan PROPERTIES LINK_FLAGS "-o ivan.js -s DISABLE_EXCEPTION_CATCHING=0 -s DISABLE_EXCEPTION_THROWING=0 -s DEMANGLE_SUPPORT=1 -s SAFE_HEAP=0 --bind -s WASM=1 -s ASSERTIONS=1 --preload-file Graphics --preload-file Script --preload-file favicon.ico")
 endif()
 
 if(MSVC AND _VCPKG_INSTALLED_DIR)
