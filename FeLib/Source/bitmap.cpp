@@ -873,22 +873,22 @@ void bitmap::DrawLine(int OrigFromX, int OrigFromY, int OrigToX, int OrigToY, co
   static const int PointY[] = { 0, -1, 0, 0, 1 };
   const int Times = Wide ? 5 : 1;
 
-  for(int c = 0; c < Times; ++c)
+  for(int c1 = 0; c1 < Times; ++c1)
   {
-    const int X1 = OrigFromX + PointX[c];
-    const int Y1 = OrigFromY + PointY[c];
-    const int X2 = OrigToX + PointX[c];
-    const int Y2 = OrigToY + PointY[c];
+    const int X1 = OrigFromX + PointX[c1];
+    const int Y1 = OrigFromY + PointY[c1];
+    const int X2 = OrigToX + PointX[c1];
+    const int Y2 = OrigToY + PointY[c1];
     const int DeltaX = abs(X2 - X1);
     const int DeltaY = abs(Y2 - Y1);
-    int x, c;
+    int x, c2;
     int XChange, PtrXChange, PtrYChange;
     int DoubleDeltaX, DoubleDeltaY, End;
 
     if(DeltaX >= DeltaY)
     {
       x = X1;
-      c = DeltaX;
+      c2 = DeltaX;
       PtrXChange = XChange = X1 < X2 ? 1 : -1;
       PtrYChange = Y1 < Y2 ? Size.X : -Size.X;
       DoubleDeltaX = DeltaX << 1;
@@ -898,7 +898,7 @@ void bitmap::DrawLine(int OrigFromX, int OrigFromY, int OrigToX, int OrigToY, co
     else
     {
       x = Y1;
-      c = DeltaY;
+      c2 = DeltaY;
       XChange = Y1 < Y2 ? 1 : -1;
       PtrXChange = Y1 < Y2 ? Size.X : -Size.X;
       PtrYChange = X1 < X2 ? 1 : -1;
@@ -914,11 +914,11 @@ void bitmap::DrawLine(int OrigFromX, int OrigFromY, int OrigToX, int OrigToY, co
     {
       x += XChange;
       Ptr += PtrXChange;
-      c += DoubleDeltaY;
+      c2 += DoubleDeltaY;
 
-      if(c >= DoubleDeltaX)
+      if(c2 >= DoubleDeltaX)
       {
-	c -= DoubleDeltaX;
+	c2 -= DoubleDeltaX;
 	Ptr += PtrYChange;
       }
 
@@ -2053,7 +2053,7 @@ void cachedfont::PrintCharacter(const blitdata B) const
     ulong* DestPtr = reinterpret_cast<ulong*>(*DestLine + B.Dest.X);
 
     for(; FontPtr != EndPtr; ++DestPtr, ++MaskPtr, ++FontPtr)
-      *DestPtr = *DestPtr & *MaskPtr | *FontPtr;
+      *DestPtr = (*DestPtr & *MaskPtr) | *FontPtr;
   }
 }
 

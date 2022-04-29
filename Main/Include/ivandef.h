@@ -29,7 +29,9 @@
 
 #include "v2.h"
 
+#ifndef IVAN_VERSION
 #define IVAN_VERSION "0.50"
+#endif
 
 struct databasebase
 {

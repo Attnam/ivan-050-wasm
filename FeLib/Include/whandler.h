@@ -39,16 +39,17 @@ class globalwindowhandler
   static truth ControlLoopsInstalled() { return Controls; }
   static void EnableControlLoops() { ControlLoopsEnabled = true; }
   static void DisableControlLoops() { ControlLoopsEnabled = false; }
+  static truth ShiftIsDown();
 #ifdef USE_SDL
   static void Init();
   static void SetQuitMessageHandler(truth (*What)())
   { QuitMessageHandler = What; }
-  static void UpdateTick() { Tick = SDL_GetTicks() / 40; }
+  static ulong UpdateTick() { return Tick = SDL_GetTicks() / 40; }
 #endif
 #ifdef __DJGPP__
   static void Init() { }
   static void SetQuitMessageHandler(truth (*)()) { }
-  static void UpdateTick() { Tick = uclock() * 25 / UCLOCKS_PER_SEC; }
+  static ulong UpdateTick() { return Tick = uclock() * 25 / UCLOCKS_PER_SEC; }
 #endif
  private:
 #ifdef USE_SDL
