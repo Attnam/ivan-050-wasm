@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>IVAN 0.50 Emscripten</title>
+    <style>
+      body {
+        font-family: "Trebuchet MS", sans-serif;
+        animation-name: colorful;
+        animation-duration: 30s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+      }
+      @keyframes colorful {
+        0% {
+          background-color: hsla(30, 72%, 10%, 1);
+        }
+        33% {
+          background-color: hsla(150, 72%, 10%, 1);
+        }
+        67% {
+          background-color: hsla(270, 72%, 10%, 1);
+        }
+        100% {
+          background-color: hsla(390, 72%, 10%, 1);
+        }
+      }
+
+      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      textarea.emscripten { font-family: monospace; width: 80%; color: white; }
+      div.emscripten { text-align: center; color: white; }
+      div.emscripten_border { border: 1px solid transparent; color: white; }
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      canvas.emscripten { border: 0px none; }
+
+      .spinner {
+        height: 50px;
+        width: 50px;
+        margin: 0px auto;
+        -webkit-animation: rotation 3s linear infinite;
+        -moz-animation: rotation 3s linear infinite;
+        -o-animation: rotation 3s linear infinite;
+        animation: rotation 3.0s linear infinite;
+        border-left: 30px solid rgb(255,0,0);
+        border-right: 30px solid rgb(255,0,0);
+        border-bottom: 30px solid rgb(0,0,0);
+        border-top: 30px solid rgb(0,0,0);
+        border-radius: 100%;
+        background-color: rgb(0,0,0);
+      }
+      @-webkit-keyframes rotation {
+        from {-webkit-transform: rotate(0deg);}
+        to {-webkit-transform: rotate(360deg);}
+      }
+      @-moz-keyframes rotation {
+        from {-moz-transform: rotate(0deg);}
+        to {-moz-transform: rotate(360deg);}
+      }
+      @-o-keyframes rotation {
+        from {-o-transform: rotate(0deg);}
+        to {-o-transform: rotate(360deg);}
+      }
+      @keyframes rotation {
+        from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}
+      }
+
+      .pentacle {
+        width: 300px;
+        height: 300px;
+        position: relative;
+        margin: 0 auto;
+        top: 50px;
+        -webkit-animation: rotating 10s linear infinite;
+        -moz-animation: rotating 10s linear infinite;
+        -o-animation: rotating 10s linear infinite;
+        animation: rotating 10s linear infinite;
+        background-color: transparent;
+      }
+      .circle {
+        position: center;
+        width: 288px;
+        height: 288px;
+        border: 6px solid #800;
+        border-radius: 50%;
+      }
+      .strip {
+        position: absolute;
+        height: 280px;
+        width: 0px;
+        left: 150px;
+        top: 10px;
+      }
+
+      li {
+        list-style-type: none;
+        height: 280px;
+        width: 0px;
+        margin-left: 44px;
+        width: 5px;
+        background: #800;
+        border-left: 1px solid transparent;
+        border-right: 1px solid transparent;
+      }
+
+      .t0 { transform: rotate(0deg); }
+      .t1 { transform: rotate(72deg); }
+      .t2 { transform: rotate(144deg); }
+      .t3 { transform: rotate(216deg); }
+      .t4 { transform: rotate(288deg); }
+
+      .froggie {
+        position: relative;
+        margin: 0 auto;
+        width: 16px;
+        height: 16px;
+        border: 0px solid #100;
+        border-radius: 50%;
+        top: -112px;
+      }
+
+      @keyframes rotating {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(-360deg);
+        }
+      }
+
+      #output {
+        width: 100%;
+        height: 200px;
+        margin: 0 auto;
+        margin-top: 10px;
+        border-left: 0px;
+        border-right: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        display: block;
+        background-color: black;
+        color: white;
+        font-family: 'Lucida Console', Monaco, monospace;
+        outline: none;
+      }
+
+      <!-- Really, this is harder than it should be in 2022... -->
+      <!-- background -->
+      progress::-webkit-progress-bar {background-color: transparent; width: 100%;}
+      progress {background-color: transparent;}
+      <!-- value -->
+      progress::-webkit-progress-value {background-color: #800 !important;}
+      progress::-moz-progress-bar {background-color: #800 !important;}
+      progress {color: #800;}
+
+    </style>
+  </head>
+  <body>
+    <div class="emscripten" id="status">Downloading...</div>
+    <div class="emscripten">
+      <progress value="0" max="100" id="progress" style="width:300px; height:8px;" hidden></progress>
+    </div>
+    <figure style="overflow:visible;" id="spinner">
+      <div class="emscripten">
+        <p style="color:white; text-align:center; font-family: 'Trebuchet MS', sans-serif;">
+          <br>This may take some time, please wait.
+        </p>
+      </div>
+      <div class="pentacle">
+        <div class="circle"></div>
+        <div class="strip t0"><li></li></div>
+        <div class="strip t1"><li></li></div>
+        <div class="strip t2"><li></li></div>
+        <div class="strip t3"><li></li></div>
+        <div class="strip t4"><li></li></div>
+      </div>
+      <div class="froggie">
+        <img class="froggie-png" src="/froggie.png" alt="A greater dark frog stares menacingly at you.">
+      </div>
+    </figure>
+    
+    <div class="emscripten_border">
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    </div>
+<!--
+    <hr/>
+    <div class="emscripten">
+      <input type="checkbox" id="resize">Resize canvas
+      <input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer
+      &nbsp;&nbsp;&nbsp;
+      <input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, 
+                                                                                document.getElementById('resize').checked)">
+    </div>
+    <hr/>
+-->
+<!-- The wasm console output text area
+    <textarea class="emscripten" id="output" rows="8"></textarea>
+-->
+    <script type='text/javascript'>
+      var statusElement = document.getElementById('status');
+      var progressElement = document.getElementById('progress');
+      var spinnerElement = document.getElementById('spinner');
+
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+          var element = document.getElementById('output');
+          if (element) element.value = ''; // clear browser cache
+          return function(text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            // These replacements are necessary if you render to raw HTML
+            //text = text.replace(/&/g, "&amp;");
+            //text = text.replace(/</g, "&lt;");
+            //text = text.replace(/>/g, "&gt;");
+            //text = text.replace('\n', '<br>', 'g');
+            console.log(text);
+            if (element) {
+              element.value += text + "\n";
+              element.scrollTop = element.scrollHeight; // focus on bottom
+            }
+          };
+        })(),
+        canvas: (function() {
+          var canvas = document.getElementById('canvas');
+
+          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+          // application robust, you may want to override this behavior before shipping!
+          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+          return canvas;
+        })(),
+        setStatus: function(text) {
+          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+          if (text === Module.setStatus.last.text) return;
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var now = Date.now();
+          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+          Module.setStatus.last.time = now;
+          Module.setStatus.last.text = text;
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2])*100;
+            progressElement.max = parseInt(m[4])*100;
+            progressElement.hidden = true;
+            spinnerElement.hidden = false;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+            if (!text) spinnerElement.hidden = true;
+          }
+          statusElement.innerHTML = text;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function() {
+        Module.setStatus('Exception thrown, see JavaScript console');
+        spinnerElement.style.display = 'none';
+        Module.setStatus = function(text) {
+          if (text) console.error('[post-exception status] ' + text);
+        };
+      };
+    </script>
+    {{{ SCRIPT }}}
+    <script async type="text/javascript" src="loadFile.js"></script>
+  </body>
+</html>
