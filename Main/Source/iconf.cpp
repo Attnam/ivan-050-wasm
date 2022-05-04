@@ -21,6 +21,7 @@
 #include "graphics.h"
 #include "bitmap.h"
 #include "igraph.h"
+#include "save.h"
 
 stringoption ivanconfig::DefaultName(	  "DefaultName",
 					  "player's default name",
@@ -65,6 +66,13 @@ truthoption ivanconfig::FullScreenMode(	  "FullScreenMode",
 					  &configsystem::NormalTruthChangeInterface,
 					  &FullScreenModeChanger);
 #endif
+#ifdef __EMSCRIPTEN__
+stringoption ivanconfig::ImportSavefile(	  "ImportSavefile",
+					  "load pre-existing savefile(s) to app filesystem",
+					  "",
+					  &configsystem::NormalStringDisplayer,
+					  &FileUploadInterface);
+#endif
 col24 ivanconfig::ContrastLuminance = NORMAL_LUMINANCE;
 
 v2 ivanconfig::GetQuestionPos() { return game::IsRunning() ? v2(16, 6) : v2(30, 30); }
@@ -100,7 +108,21 @@ truth ivanconfig::DefaultNameChangeInterface(stringoption* O)
 
   return false;
 }
+#ifdef __EMSCRIPTEN__
+truth ivanconfig::FileUploadInterface(stringoption* O)
+{
+  EM_ASM(
+    var file_selector = document.createElement('input');
+    file_selector.setAttribute('type', 'file');
+    file_selector.setAttribute('multiple', 'multiple');
+    file_selector.setAttribute('onchange','open_file(event)');
+    //file_selector.setAttribute('accept','.sav'); // optional - limit accepted file types 
+    file_selector.click();
+  );
 
+  return false;
+}
+#endif
 truth ivanconfig::DefaultPetNameChangeInterface(stringoption* O)
 {
   festring String;
@@ -202,6 +224,9 @@ void ivanconfig::Initialize()
   configsystem::AddOption(&UseAlternativeKeys);
 #ifndef __DJGPP__
   configsystem::AddOption(&FullScreenMode);
+#endif
+#ifdef __EMSCRIPTEN__
+  configsystem::AddOption(&ImportSavefile);
 #endif
 #if defined(WIN32) || defined(__DJGPP__)
   configsystem::SetConfigFileName("ivan.cfg");

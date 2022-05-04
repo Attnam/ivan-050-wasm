@@ -45,6 +45,9 @@ class ivanconfig
   static void AutoSaveIntervalDisplayer(const numberoption*, festring&);
   static void ContrastDisplayer(const numberoption*, festring&);
   static truth DefaultNameChangeInterface(stringoption*);
+#ifdef __EMSCRIPTEN__
+  static truth FileUploadInterface(stringoption*);
+#endif
   static truth DefaultPetNameChangeInterface(stringoption*);
   static truth AutoSaveIntervalChangeInterface(numberoption*);
   static truth ContrastChangeInterface(numberoption*);
@@ -65,6 +68,9 @@ class ivanconfig
   static truthoption UseAlternativeKeys;
 #ifndef __DJGPP__
   static truthoption FullScreenMode;
+#endif
+#ifdef __EMSCRIPTEN__
+  static stringoption ImportSavefile;
 #endif
   static col24 ContrastLuminance;
 };
