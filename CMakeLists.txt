@@ -39,7 +39,7 @@ if(UNIX)
       install(DIRECTORY Graphics Script DESTINATION "${CMAKE_INSTALL_PREFIX}")
       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Main/ivan.js ${CMAKE_CURRENT_BINARY_DIR}/Main/ivan.wasm ${CMAKE_CURRENT_BINARY_DIR}/Main/ivan.data DESTINATION "${CMAKE_INSTALL_PREFIX}")
       install(FILES Main/JS/loadFile.js DESTINATION "${CMAKE_INSTALL_PREFIX}")
-      install(FILES Main/Resource/favicon.ico DESTINATION Main/Resource/froggie.png DESTINATION "${CMAKE_INSTALL_PREFIX}")
+      install(FILES Main/Resource/favicon.ico Main/Resource/froggie.png DESTINATION "${CMAKE_INSTALL_PREFIX}")
   else() # UNIX
     install(DIRECTORY Graphics Script DESTINATION "${CMAKE_INSTALL_DATADIR}/ivan")
     add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
