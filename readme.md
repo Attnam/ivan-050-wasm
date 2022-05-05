@@ -1,14 +1,14 @@
 Iter Vehemens ad Necem 0.50 in WebAssembly
 ==========================================
 
-Late to the Party? Never fear!
+Late to the Party? Never fear! Play IVAN in your browser, [right here](https://attnam.github.io/ivan-050-wasm/).
 
 This is a port of IVAN 0.50 to WebAssembly, via the magic of emscripten.
 
 This was inspired in the first instance by [James Mackenzie's](https://github.com/jamesfmackenzie) [port](https://www.jamesfmackenzie.com/2019/10/28/commander-keen-ported-to-webassembly/) of 
 [Commander Keen](http://www.jamesfmackenzie.com/chocolatekeen/) for the web.
 
-If you're interested in the technical details of this port of IVAN, you could read the git diff, 
+If you're interested in the technical details of this port of IVAN, you could read the [git diff](https://github.com/Attnam/ivan-050-wasm/compare/383ffef341f4b247e3edb0cf49344b120d540120...04be011ce313517baba885a53fb48412cc24eb75), 
 but honestly you're better off reading about [Connor Clark's](https://hoten.cc/about/) 
 [web port](https://hoten.cc/blog/porting-zelda-classic-to-the-web/) of [Zelda Classic](https://hoten.cc/zc/play/).
 
